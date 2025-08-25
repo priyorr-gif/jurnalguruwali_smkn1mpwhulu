@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jurnal Guru Wali</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h2 { text-align: center; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, textarea { width: 100%; padding: 5px; margin-top: 3px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #333; padding: 5px; text-align: left; }
+    .btn { padding: 10px 15px; margin: 10px 5px 0 0; cursor: pointer; border: none; border-radius: 5px; }
+    .btn-add { background: #4CAF50; color: white; }
+    .btn-pdf { background: #2196F3; color: white; }
+    canvas { border: 1px solid #000; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Jurnal Guru Wali</h2>
+
+  <label>Nama Guru Wali:</label>
+  <input type="text" id="namaGuru">
+
+  <label>Kelas:</label>
+  <input type="text" id="kelas">
+
+  <label>Tanggal:</label>
+  <input type="date" id="tanggal">
+
+  <h3>Daftar Murid Binaan</h3>
+  <table id="muridTable">
+    <thead>
+      <tr><th>No</th><th>Nama Murid</th></tr>
+    </thead>
+    <tbody id="muridBody"></tbody>
+  </table>
+  <button class="btn btn-add" onclick="tambahMurid()">+ Tambah Murid</button>
+
+  <h3>Kegiatan Bimbingan</h3>
+  <textarea id="kegiatan" rows="4"></textarea>
+
+  <h3>Tanda Tangan Guru Wali</h3>
+  <canvas id="signature-pad" width="300" height="150"></canvas><br>
+  <button class="btn" onclick="clearSignature()">Hapus Tanda Tangan</button>
+
+  <br><br>
+  <button class="btn btn-pdf" onclick="downloadPDF()">📥 Unduh PDF</button>
+
+  <!-- pustaka eksternal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+    const muridBody = document.getElementById("muridBody");
+    let muridCount = 0;
+    const maxMurid = 12;
+
+    // tampilkan minimal 5 murid default
+    for (let i = 0; i < 5; i++) tambahMurid();
+
+    function tambahMurid() {
+      if (muridCount >= maxMurid) return alert("Maksimal 12 murid.");
+      muridCount++;
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${muridCount}</td>
+        <td><input type="text" placeholder="Nama Murid ${muridCount}"></td>
+      `;
+      muridBody.appendChild(row);
+    }
+
+    // SignaturePad
+    const canvas = document.getElementById("signature-pad");
+    const signaturePad = new SignaturePad(canvas);
+
+    function clearSignature() {
+      signaturePad.clear();
+    }
+
+    function downloadPDF() {
+      const doc = new jsPDF();
+
+      const namaGuru = document.getElementById("namaGuru").value;
+      const kelas = document.getElementById("kelas").value;
+      const tanggal = document.getElementById("tanggal").value;
+      const kegiatan = document.getElementById("kegiatan").value;
+
+      doc.setFontSize(14);
+      doc.text("Jurnal Guru Wali", 105, 15, { align: "center" });
+
+      doc.setFontSize(11);
+      doc.text(`Nama Guru Wali: ${namaGuru}`, 15, 30);
+      doc.text(`Kelas: ${kelas}`, 15, 37);
+      doc.text(`Tanggal: ${tanggal}`, 15, 44);
+
+      // tabel murid
+      let muridData = [];
+      document.querySelectorAll("#muridBody tr").forEach((tr, i) => {
+        const nama = tr.querySelector("input").value;
+        muridData.push([i+1, nama]);
+      });
+
+      doc.autoTable({
+        startY: 50,
+        head: [["No", "Nama Murid"]],
+        body: muridData
+      });
+
+      doc.text("Kegiatan Bimbingan:", 15, doc.lastAutoTable.finalY + 15);
+      doc.text(kegiatan, 15, doc.lastAutoTable.finalY + 25);
+
+      // tanda tangan
+      if (!signaturePad.isEmpty()) {
+        const imgData = signaturePad.toDataURL();
+        doc.addImage(imgData, "PNG", 140, doc.lastAutoTable.finalY + 10, 50, 30);
+      }
+      doc.text("Tanda Tangan Guru Wali", 140, doc.lastAutoTable.finalY + 45);
+
+      doc.save("jurnal_guru_wali.pdf");
+    }
+  </script>
+</body>
+</html>
