@@ -1,80 +1,92 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Jurnal Guru Wali – SMKN 1 Mempawah Hulu</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
-    .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h1 { text-align: center; }
-    label { display: block; margin-top: 15px; font-weight: bold; }
-    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
-    button { margin-top: 20px; padding: 10px 15px; border: none; background: #4f46e5; color: white; border-radius: 6px; cursor: pointer; }
-    button:hover { background: #3730a3; }
-    #signature-pad { border: 1px solid #ccc; border-radius: 6px; margin-top: 10px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jurnal Guru Wali – SMKN 1 Mempawah Hulu</title>
+<!-- jsPDF dan AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<!-- Signature Pad -->
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+.container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+h1 { text-align: center; }
+label { display: block; margin-top: 15px; font-weight: bold; }
+input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+button { margin-top: 20px; padding: 10px 15px; border: none; background: #4f46e5; color: white; border-radius: 6px; cursor: pointer; }
+button:hover { background: #3730a3; }
+#signature-pad { border: 1px solid #ccc; border-radius: 6px; margin-top: 10px; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Jurnal Guru Wali</h1>
-    <label>Nama Guru Wali</label>
-    <input type="text" id="nama" placeholder="Mis. Priyo Radika Rizki">
-    <label>Kelas Binaan</label>
-    <input type="text" id="kelas" placeholder="X / XI / XII">
-    <label>Tanggal Kegiatan</label>
-    <input type="date" id="tanggal">
-    <label>Jenis Kegiatan</label>
-    <select id="jenis">
-      <option value="">Pilih...</option>
-      <option>Pendampingan</option>
-      <option>Konseling</option>
-      <option>Monitoring</option>
-      <option>Koordinasi</option>
-      <option>Lainnya</option>
-    </select>
-    <label>Deskripsi Kegiatan</label>
-    <textarea id="deskripsi" rows="4" placeholder="Uraikan kegiatan secara singkat"></textarea>
-    <label>Refleksi / Tindak Lanjut</label>
-    <textarea id="refleksi" rows="3" placeholder="Temuan, evaluasi, rencana tindak lanjut"></textarea>
-    <label>Tanda Tangan</label>
-    <canvas id="signature-pad" width="400" height="150"></canvas>
-    <button onclick="clearSignature()">Hapus Tanda Tangan</button>
-    <button onclick="downloadPDF()">Unduh PDF</button>
-  </div>
+<div class="container">
+<h1>Jurnal Guru Wali</h1>
+<label>Nama Guru Wali</label>
+<input type="text" id="nama" placeholder="Mis. Priyo Radika Rizki">
+<label>Kelas Binaan</label>
+<input type="text" id="kelas" placeholder="X / XI / XII">
+<label>Tanggal Kegiatan</label>
+<input type="date" id="tanggal">
+<label>Jenis Kegiatan</label>
+<select id="jenis">
+<option value="">Pilih...</option>
+<option>Pendampingan</option>
+<option>Konseling</option>
+<option>Monitoring</option>
+<option>Koordinasi</option>
+<option>Lainnya</option>
+</select>
+<label>Deskripsi Kegiatan</label>
+<textarea id="deskripsi" rows="4" placeholder="Uraikan kegiatan secara singkat"></textarea>
+<label>Refleksi / Tindak Lanjut</label>
+<textarea id="refleksi" rows="3" placeholder="Temuan, evaluasi, rencana tindak lanjut"></textarea>
+<label>Tanda Tangan</label>
+<canvas id="signature-pad" width="400" height="150"></canvas>
+<button onclick="clearSignature()">Hapus Tanda Tangan</button>
+<button onclick="downloadPDF()">Unduh PDF</button>
+</div>
 
-  <script>
-    const canvas = document.getElementById('signature-pad');
-    const signaturePad = new SignaturePad(canvas);
+<script>
+const canvas = document.getElementById('signature-pad');
+const signaturePad = new SignaturePad(canvas);
 
-    function clearSignature() {
-      signaturePad.clear();
-    }
+function clearSignature() { signaturePad.clear(); }
 
-    function downloadPDF() {
-      const doc = new jsPDF();
-      doc.setFontSize(16);
-      doc.text('JURNAL GURU WALI', 105, 20, null, null, 'center');
-      doc.setFontSize(12);
-      doc.text('Nama Guru Wali: ' + document.getElementById('nama').value, 20, 40);
-      doc.text('Kelas Binaan: ' + document.getElementById('kelas').value, 20, 50);
-      doc.text('Tanggal Kegiatan: ' + document.getElementById('tanggal').value, 20, 60);
-      doc.text('Jenis Kegiatan: ' + document.getElementById('jenis').value, 20, 70);
-      doc.text('Deskripsi: ' + document.getElementById('deskripsi').value, 20, 80);
-      doc.text('Refleksi / Tindak Lanjut: ' + document.getElementById('refleksi').value, 20, 90);
+function downloadPDF(){
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text('JURNAL GURU WALI', 105, 15, null, null, 'center');
 
-      // Menambahkan tanda tangan
-      if (!signaturePad.isEmpty()) {
-        const imgData = signaturePad.toDataURL();
-        doc.addImage(imgData, 'PNG', 20, 100, 160, 60);
-      } else {
-        doc.text('Tanda tangan belum diisi', 20, 160);
-      }
+  // Data tabel
+  const data = [
+    ['Nama Guru Wali', document.getElementById('nama').value],
+    ['Kelas Binaan', document.getElementById('kelas').value],
+    ['Tanggal Kegiatan', document.getElementById('tanggal').value],
+    ['Jenis Kegiatan', document.getElementById('jenis').value],
+    ['Deskripsi Kegiatan', document.getElementById('deskripsi').value],
+    ['Refleksi / Tindak Lanjut', document.getElementById('refleksi').value]
+  ];
 
-      doc.save('Jurnal_Guru_Wali.pdf');
-    }
-  </script>
+  doc.autoTable({
+    startY: 25,
+    head: [['Field', 'Isi']],
+    body: data,
+    styles: { fontSize: 12, cellPadding: 3 }
+  });
+
+  // Tambahkan tanda tangan di bawah tabel
+  const finalY = doc.lastAutoTable.finalY || 35;
+  if (!signaturePad.isEmpty()) {
+    const imgData = signaturePad.toDataURL();
+    doc.addImage(imgData, 'PNG', 20, finalY + 10, 160, 60);
+  } else {
+    doc.text('Tanda tangan belum diisi', 20, finalY + 40);
+  }
+
+  doc.save('Jurnal_Guru_Wali.pdf');
+}
+</script>
 </body>
 </html>
