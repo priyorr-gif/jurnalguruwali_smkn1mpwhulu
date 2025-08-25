@@ -41,20 +41,18 @@ button:hover { background: #3730a3; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
 <script>
 function downloadPDF(){
-  const {{ jsPDF }} = window.jspdf;
-  const doc = new jsPDF();
+  var doc = new jsPDF();
   doc.setFontSize(16);
   doc.text('JURNAL GURU WALI', 105, 20, null, null, 'center');
   doc.setFontSize(12);
-  doc.text(`Nama Guru Wali: ${document.getElementById('nama').value}`, 20, 40);
-  doc.text(`Kelas Binaan: ${document.getElementById('kelas').value}`, 20, 50);
-  doc.text(`Tanggal Kegiatan: ${document.getElementById('tanggal').value}`, 20, 60);
-  doc.text(`Jenis Kegiatan: ${document.getElementById('jenis').value}`, 20, 70);
-  doc.text(`Deskripsi: ${document.getElementById('deskripsi').value}`, 20, 80);
-  doc.text(`Refleksi / Tindak Lanjut: ${document.getElementById('refleksi').value}`, 20, 90);
+  doc.text('Nama Guru Wali: ' + document.getElementById('nama').value, 20, 40);
+  doc.text('Kelas Binaan: ' + document.getElementById('kelas').value, 20, 50);
+  doc.text('Tanggal Kegiatan: ' + document.getElementById('tanggal').value, 20, 60);
+  doc.text('Jenis Kegiatan: ' + document.getElementById('jenis').value, 20, 70);
+  doc.text('Deskripsi: ' + document.getElementById('deskripsi').value, 20, 80);
+  doc.text('Refleksi / Tindak Lanjut: ' + document.getElementById('refleksi').value, 20, 90);
   doc.save('Jurnal_Guru_Wali.pdf');
 }
 </script>
 </body>
 </html>
-
