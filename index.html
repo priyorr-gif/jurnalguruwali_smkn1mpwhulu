@@ -18,17 +18,38 @@ input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border-rad
 button { margin-top: 20px; padding: 10px 15px; border: none; background: #4f46e5; color: white; border-radius: 6px; cursor: pointer; }
 button:hover { background: #3730a3; }
 #signature-pad { border: 1px solid #ccc; border-radius: 6px; margin-top: 10px; }
+.murid { margin-top: 5px; }
 </style>
 </head>
 <body>
 <div class="container">
 <h1>Jurnal Guru Wali</h1>
+
 <label>Nama Guru Wali</label>
 <input type="text" id="nama" placeholder="Mis. Priyo Radika Rizki">
+
 <label>Kelas Binaan</label>
 <input type="text" id="kelas" placeholder="X / XI / XII">
+
+<label>Murid Binaan (maks. 12)</label>
+<div id="murid-container">
+  <input type="text" class="murid" placeholder="Nama Murid 1">
+  <input type="text" class="murid" placeholder="Nama Murid 2">
+  <input type="text" class="murid" placeholder="Nama Murid 3">
+  <input type="text" class="murid" placeholder="Nama Murid 4">
+  <input type="text" class="murid" placeholder="Nama Murid 5">
+  <input type="text" class="murid" placeholder="Nama Murid 6">
+  <input type="text" class="murid" placeholder="Nama Murid 7">
+  <input type="text" class="murid" placeholder="Nama Murid 8">
+  <input type="text" class="murid" placeholder="Nama Murid 9">
+  <input type="text" class="murid" placeholder="Nama Murid 10">
+  <input type="text" class="murid" placeholder="Nama Murid 11">
+  <input type="text" class="murid" placeholder="Nama Murid 12">
+</div>
+
 <label>Tanggal Kegiatan</label>
 <input type="date" id="tanggal">
+
 <label>Jenis Kegiatan</label>
 <select id="jenis">
 <option value="">Pilih...</option>
@@ -38,10 +59,13 @@ button:hover { background: #3730a3; }
 <option>Koordinasi</option>
 <option>Lainnya</option>
 </select>
+
 <label>Deskripsi Kegiatan</label>
 <textarea id="deskripsi" rows="4" placeholder="Uraikan kegiatan secara singkat"></textarea>
+
 <label>Refleksi / Tindak Lanjut</label>
 <textarea id="refleksi" rows="3" placeholder="Temuan, evaluasi, rencana tindak lanjut"></textarea>
+
 <label>Tanda Tangan</label>
 <canvas id="signature-pad" width="400" height="150"></canvas>
 <button onclick="clearSignature()">Hapus Tanda Tangan</button>
@@ -76,13 +100,30 @@ function downloadPDF(){
     styles: { fontSize: 12, cellPadding: 3 }
   });
 
-  // Tambahkan tanda tangan di bawah tabel
+  // Tambahkan murid binaan
+  const muridInputs = document.querySelectorAll('.murid');
+  let muridList = [];
+  muridInputs.forEach((input, index) => {
+    if(input.value.trim() !== '') {
+      muridList.push((index+1) + '. ' + input.value);
+    }
+  });
+
   const finalY = doc.lastAutoTable.finalY || 35;
+  if(muridList.length > 0){
+    doc.text('Murid Binaan:', 20, finalY + 10);
+    muridList.forEach((m, i) => {
+      doc.text(m, 25, finalY + 20 + i*10);
+    });
+  }
+
+  // Tambahkan tanda tangan di bawah murid
+  const signatureY = finalY + 20 + (muridList.length*10) + 10;
   if (!signaturePad.isEmpty()) {
     const imgData = signaturePad.toDataURL();
-    doc.addImage(imgData, 'PNG', 20, finalY + 10, 160, 60);
+    doc.addImage(imgData, 'PNG', 20, signatureY, 160, 60);
   } else {
-    doc.text('Tanda tangan belum diisi', 20, finalY + 40);
+    doc.text('Tanda tangan belum diisi', 20, signatureY + 40);
   }
 
   doc.save('Jurnal_Guru_Wali.pdf');
